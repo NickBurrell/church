@@ -10,11 +10,11 @@ os:
   - osx
 
 matrix:
-  - include:
+  include:
     - env: BUILD_OPTIONS=COMPILE
     - env: BUILD_OPTIONS=TEST
     - env: BUILD_OPTIONS=BENCHMARK
-    allow_failures:
+      allow_failures:
     - env: BUILD_OPTIONS=BENCHMARK
     - os: osx
 
