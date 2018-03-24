@@ -2,6 +2,7 @@ language: cpp
 
 
 compiler:
+  - gcc
   - clang
 
 os:
@@ -9,17 +10,13 @@ os:
   - osx
 
 matrix:
-  include:
+  - include:
     - env: BUILD_OPTIONS=COMPILE
     - env: BUILD_OPTIONS=TEST
     - env: BUILD_OPTIONS=BENCHMARK
-    - os: linux
-      sudo: required
-    - os: osx
-
     allow_failures:
-      env: BUILD_OPTIONS=BENCHMARK
-      os: osx
+    - env: BUILD_OPTIONS=BENCHMARK
+    - os: osx
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
