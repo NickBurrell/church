@@ -11,15 +11,20 @@ os:
 
 matrix:
   include:
-    - env: BUILD_TYPE=COMPILE
-    - env: BUILD_TYPE=TEST
-    - env: BUILD_TYPE=BENCH
-  allow_failures:
+    - env: BUILD_OPTIONS=COMPILE BUILD_TYPE=RELEASE
+    - env: BUILD_OPTIONS=TEST BUILD_TYPE=RELEASE
+    - env: BUILD_OPTIONS=BENCH BUILD_TYPE=RELEASE
+    - env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+    - env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+    - env: BUILD_OPTIONS=BENCH BUILD_TYPE=DEBUG
+      allow_failures:
     - os: osx
-    - env: BUILD_TYPE=BENCH
+    - env: BUILD_OPTIONS=BENCH BUILD_TYPE=RELEASE
+    - env: BUILD_OPTIONS=BENCH BUILD_TYPE=DEBUG
+
 
 script:
-  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake .; fi
-  - if [ "$BUILD_TYPE" = "TEST" ]; then cmake . -DTEST=TRUE; fi
-  - if [ "$BUILD_TYPE" = "BENCHMARK" ]; then cmake . -DBENCHMARK=TRUE; fi
+  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then if [ "$BUILD_TYPE" = "RELEASE" ]; then cmake . -DCMAKE_BUILD_TYPE=Release; else cmake. -DCMAKE_BUILD_TYPE=Debug; fi; fi
+  - if [ "$BUILD_OPTIONS" = "TEST" ]; then if [ "$BUILD_TYPE" = "RELEASE" ]; then cmake . -DCMAKE_BUILD_TYPE=Release -DTEST=TRUE; else cmake. -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi; fi 
+  - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then if [ "$BUILD_TYPE" = "RELEASE" ]; then cmake . -DCMAKE_BUILD_TYPE=Release -DBENCHMARK=TRUE; else cmake. -DCMAKE_BUILD_TYPE=Debug -DBENCHMARK=TRUE; fi; fi 
   - make
