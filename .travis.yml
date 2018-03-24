@@ -2,7 +2,6 @@ language: cpp
 
 
 compiler:
-  - gcc
   - clang
 
 os:
@@ -11,15 +10,24 @@ os:
 
 matrix:
   include:
-    - env: BUILD_OPTIONS=COMPILE BUILD_TYPE=RELEASE
-    - env: BUILD_OPTIONS=TEST BUILD_TYPE=RELEASE
-    - env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-    - env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-      allow_failures:
+    - env: BUILD_OPTIONS=COMPILE
+    - env: BUILD_OPTIONS=TEST
+    - env: BUILD_OPTIONS=BENCHMARK
+    - os: linux
+      sudo: required
     - os: osx
 
+    allow_failures:
+      env: BUILD_OPTIONS=BENCHMARK
+      os: osx
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake; fi
 
 script:
-  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then if [ "$BUILD_TYPE" = "RELEASE" ]; then cmake . -DCMAKE_BUILD_TYPE=Release; else cmake. -DCMAKE_BUILD_TYPE=Debug; fi; fi
-  - if [ "$BUILD_OPTIONS" = "TEST" ]; then if [ "$BUILD_TYPE" = "RELEASE" ]; then cmake . -DCMAKE_BUILD_TYPE=Release -DTEST=TRUE; else cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi; fi 
+  - if [ ! -v BUILD_OPTION]; then cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake. -DCMAKE_BUILD_TYPE=Debug; fi
+  - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
+  - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
   - make
