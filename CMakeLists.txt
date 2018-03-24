@@ -31,5 +31,3 @@ link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
 
 add_executable(Test main.cpp)
-add_dependencies(Test GoogleTest)
-target_link_libraries(Test gtest gtest_main pthread)
