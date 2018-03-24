@@ -23,11 +23,7 @@ script:
 
 jobs:
   include:
-    - stage: test
+    - stage: compile
       script:
         - cmake . -DTEST=true
-        - make
-    - stage: benchmark
-      script:
-        - cmake . -DBENCHMARK=true
         - make
