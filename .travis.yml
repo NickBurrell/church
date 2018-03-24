@@ -16,9 +16,10 @@ matrix:
     - env: BUILD_TYPE=BENCH
   allow_failures:
     - os: osx
+    - env: BUILD_TYPE=BENCH
 
 script:
   - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake .; fi
-  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake . -DTEST=TRUE; fi
-  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake . -DBENCHMARK=TRUE; fi
+  - if [ "$BUILD_TYPE" = "TEST" ]; then cmake . -DTEST=TRUE; fi
+  - if [ "$BUILD_TYPE" = "BENCHMARK" ]; then cmake . -DBENCHMARK=TRUE; fi
   - make
