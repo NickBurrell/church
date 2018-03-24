@@ -20,7 +20,7 @@ if(TEST)
     )
 endif()
 
-if(TEST)
+if(BENCHMARK)
   ExternalProject_Add(GoogleBench
     GIT_REPOSITORY https://github.com/google/benchmark
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
