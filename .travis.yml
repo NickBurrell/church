@@ -1,0 +1,30 @@
+sudo: required
+language: cpp
+compiler:
+  - gcc
+  - clang
+
+os:
+  - linux
+  - window
+  - osx
+
+matrix:
+  allow_failures:
+    - os: osx
+
+stages:
+  - compile
+  - test
+#  - benchmark
+
+script:
+  - cmake .
+  - make
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - cmake . -DTEST=true
+        - make
