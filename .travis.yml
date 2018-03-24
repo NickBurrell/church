@@ -1,5 +1,6 @@
-sudo: required
 language: cpp
+
+
 compiler:
   - gcc
   - clang
@@ -9,21 +10,15 @@ os:
   - osx
 
 matrix:
+  include:
+    - env: BUILD_TYPE=COMPILE
+    - env: BUILD_TYPE=TEST
+    - env: BUILD_TYPE=BENCH
   allow_failures:
     - os: osx
 
-stages:
-  - compile
-  - test
- - benchmark
-
 script:
-  - cmake .
+  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake .; fi
+  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake . -DTEST=TRUE; fi
+  - if [ "$BUILD_TYPE" = "COMPILE" ]; then cmake . -DBENCHMARK=TRUE; fi
   - make
-
-jobs:
-  include:
-    - stage: compile
-      script:
-        - cmake . -DTEST=true
-        - make
