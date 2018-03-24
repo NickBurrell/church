@@ -23,7 +23,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake; fi
 
 script:
-  - if [ ! -v BUILD_OPTION]; then cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+  - if [ -z "$BUILD_OPTION" ]; then cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
   - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake. -DCMAKE_BUILD_TYPE=Debug; fi
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
