@@ -6,7 +6,6 @@ compiler:
 
 os:
   - linux
-  - window
   - osx
 
 matrix:
@@ -16,7 +15,7 @@ matrix:
 stages:
   - compile
   - test
-#  - benchmark
+ - benchmark
 
 script:
   - cmake .
@@ -27,4 +26,8 @@ jobs:
     - stage: test
       script:
         - cmake . -DTEST=true
+        - make
+    - stage: benchmark
+      script:
+        - cmake . -DBENCHMARK=true
         - make

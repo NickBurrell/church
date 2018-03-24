@@ -12,17 +12,20 @@ set(CMAKE_OUTPUT_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR/bin})
 
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
-ExternalProject_Add(GoogleTest
-  DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-  GIT_REPOSITORY https://www.github.com/google/googletest
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-  )
+if(TEST)
+  ExternalProject_Add(GoogleTest
+    DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+    GIT_REPOSITORY https://www.github.com/google/googletest
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    )
+endif()
 
-ExternalProject_Add(GoogleBench
-  GIT_REPOSITORY https://github.com/google/benchmark
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-  )
-
+if(BENCHMARK)
+  ExternalProject_Add(GoogleBench
+    GIT_REPOSITORY https://github.com/google/benchmark
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    )
+endif()
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
