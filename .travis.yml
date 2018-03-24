@@ -22,9 +22,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; fi
 
-script:
-  - if [ -z "$BUILD_OPTION" ]; then cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake. -DCMAKE_BUILD_TYPE=Debug; fi
+script: 
+  - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
   - make
