@@ -39,7 +39,7 @@ script:
         find . -name "*.gcno" -exec -t mv . {} +;
         for i in $( find ./tests/ -name "*.cpp" ); do
             filename=$(echo $i | cut -f 1 -d '.');
-            ./$(i);
+            $filename;
         done
 
         find . -name "*.gcda" -exec -t mv . {} +;
