@@ -40,9 +40,11 @@ script:
         for i in $( find ./tests/ -name "*.cpp" ); do
             filename=$(echo $i | cut -f 1 -d '.');
             $filename;
-        done
 
+        done
+        ls
         find . -name "*.gcda" -exec -t mv . {} +;
+        ls
         ./run_gcov.sh;
     fi
 after_success:
