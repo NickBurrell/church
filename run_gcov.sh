@@ -1,6 +1,7 @@
 #!/bin/bash
 
-for filename in `find . | egrep '\.cpp'`
+for filename in `find . -name "*.cpp" ! -name "*CMake*"`
 do
-    gcov -n -o . $filename > /dev/null
+    echo $filename
+    gcov -n -o . $filename.cpp > /dev/null
 done

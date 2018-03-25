@@ -37,7 +37,7 @@ script:
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
         find . -name "*.gcno" -exec mv -t . {} +;
-        for i in $(find tests/ -name "*.cpp" -exec basename {}; | cut -f 1 -d '.'); do;
+        for i in $(find tests/ -name "*.cpp" -exec basename {} \; | cut -f 1 -d '.'); do;
             ./$i;
         done; 
         ./Test;
