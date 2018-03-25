@@ -11,4 +11,5 @@ GoogleTest-prefix
 GoogleBench-prefix
 lib
 bin
-
+*.gcda
+*.gcno
