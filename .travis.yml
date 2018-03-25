@@ -15,13 +15,12 @@ matrix:
     - env: BUILD_OPTIONS=TEST
     - env: BUILD_OPTIONS=BENCHMARK
   allow_failures:
-    - env: BUILD_OPTIONS=BENCHMARK
     - os: osx
-      sudo: require
+    - env: BUILD_OPTIONS=BENCHMARK
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; brew install gcc --HEAD; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; brew install gcc6; fi
 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; sudo apt-get update -qq; sudo pip install codecov; fi
 
@@ -35,7 +34,7 @@ script:
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
   - make
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && ["$BUILD_OPTIONS" = "TEST" ]; then ./run_gcov.sh; find . -name "*.gcno" -exec -t . {} +; fi 
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then ./run_gcov.sh; find . -name "*.gcno" -exec -t . {} +; fi 
 
 after_success:
-  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
