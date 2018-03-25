@@ -26,7 +26,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; sudo apt-get update -qq; sudo pip install codecov; fi
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] sudo apt-get -qq g++-6; sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] sudo apt-get g++-6 -qq; sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90; fi
 
 script: 
   - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
