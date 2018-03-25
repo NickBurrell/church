@@ -34,7 +34,7 @@ script:
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
   - make
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then find . -name "*.gcno" -exec -t . {} +; ./run_gcov.sh; fi 
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then find . -name "*.gcno" -exec -t mv . {} +; ./run_gcov.sh; fi 
 
 after_success:
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
