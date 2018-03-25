@@ -18,16 +18,47 @@ if(TEST)
     GIT_REPOSITORY https://www.github.com/google/googletest
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
     )
-endif()
+endif(TEST)
 
 if(BENCHMARK)
   ExternalProject_Add(GoogleBench
     GIT_REPOSITORY https://github.com/google/benchmark
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
     )
-endif()
+endif(BENCHMARK)
+
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
 
 add_executable(Test main.cpp)
+
+if(TEST)
+  file(GLOB test_list tests/*.cpp)
+  FOREACH(file ${test_list})
+    string(REPLACE ".cpp" "" test_name_unclean ${file})
+    get_filename_component( test_name ${test_name_unclean} NAME)
+    add_executable( ${test_name} ${file})
+
+    add_dependencies(${test_name} GoogleTest)
+    target_link_libraries(${test_name} gtest gtest_main pthread)
+
+  ENDFOREACH( file test_list)
+
+endif()
+
+if(BENCHMARK)
+
+  file(GLOB test_list bench/*.cpp)
+  FOREACH(file ${test_list})
+    string(REPLACE ".cpp" "" test_name_unclean ${file})
+    get_filename_component( test_name ${test_name_unclean} NAME)
+    add_executable( ${test_name} ${file})
+
+    add_dependencies(${test_name} GoogleTest)
+    add_dependencies(${test_name} GoogleBench)
+    target_link_libraries(${test_name} gtest gtest_main benchmark pthread)
+
+  ENDFOREACH(file in test_list)
+
+endif()

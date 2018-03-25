@@ -17,10 +17,16 @@ matrix:
   allow_failures:
     - env: BUILD_OPTIONS=BENCHMARK
     - os: osx
+      sudo: require
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; fi
+
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; sudo pip install codecov; fi
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --isntall /usr/bin/gcov gcov /usr/bin/gcov-5 90; fi
 
 script: 
   - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
@@ -28,3 +34,8 @@ script:
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
   - make
+  - ./run_gcov.sh 
+  - codecov
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
