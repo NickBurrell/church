@@ -6,7 +6,7 @@ TEST(test1, Test) {
     EXPECT_EQ(1, 2);
 }
 
-int main(int argc, char** argv) {
+int main() {
     std::cout << "test" << std::endl;
-    RUN_ALL_TESTS();
+    std::cout << RUN_ALL_TESTS() << std::endl;
 }

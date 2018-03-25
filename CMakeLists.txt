@@ -12,6 +12,20 @@ set(CMAKE_OUTPUT_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR/bin})
 
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Wextra -std=c++17")
+
+if(CMAKE_BUILD_TYPE EQUAL "Debug")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+elseif(CMAKE_BUILD_TYPE EQUAL "Release")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+endif()
+
+if(TEST)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -lgcov ")
+endif()
+
 if(TEST)
   ExternalProject_Add(GoogleTest
     DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
