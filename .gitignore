@@ -9,7 +9,12 @@ compile_commands.json
 CTestTestfile.cmake
 GoogleTest-prefix
 GoogleBench-prefix
-lib
-bin
+CMakeDoxygen.in
+CMakeDoxygenDefaults.cmake
+lib/
+bin/
 *.gcda
 *.gcno
+docs/
+build/
+!docs/Doxyfile

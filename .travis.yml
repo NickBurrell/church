@@ -3,7 +3,6 @@ language: cpp
 
 compiler:
   - gcc
-  - clang
 
 os:
   - linux
@@ -11,16 +10,47 @@ os:
 
 matrix:
   include:
-    - env: BUILD_OPTIONS=COMPILE
-    - env: BUILD_OPTIONS=TEST
-    - env: BUILD_OPTIONS=BENCHMARK
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=COMPILE
+      env: BUILD_TYPE=DEBUG
+
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=TEST
+      env: BUILD_TYPE=DEBUG
+
+
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=BENCMARK
+      env: BUILD_TYPE=DEBUG
+
+    # Release Builds
+    - os: linux
+      compiler: gcc
+      env: BUILD_TYPE=RELEASE
+
+    # OSX Builds
+    - os: osx
+      env: BUILD_OPTIONS=COMPILE
+      env: BUILD_TYPE=DEBUG
+
+    - os: osx
+      env: BUILD_OPTIONS=TEST
+      env: BUILD_TYPE=DEBUG
+
+    - os: osx
+      env: BUILD_OPTIONS=BENCHMARK
+      env: BUILD_TYPE=DEBUG
+
   allow_failures:
     - os: osx
     - env: BUILD_OPTIONS=BENCHMARK
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; brew install gcc6; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated cmake; brew upgrade cmake; brew install gcc6 --overwrite; fi
 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; sudo apt-get update -qq; sudo pip install codecov; fi
 
@@ -38,11 +68,12 @@ script:
     if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
         find . -name "*.gcno" -exec mv -t . {} +;
         for i in $(find tests/ -name "*.cpp" ! -name "*CMake*" -exec basename {} \; | cut -f 1 -d '.'); do
-            ./$i;
+            ./bin/$i;
         done; 
-        ./Test;
+        ./bin/Test;
         find . -name "*.gcda" -exec mv -t . {} +;
         ./run_gcov.sh;
         fi
 after_success:
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
+  
