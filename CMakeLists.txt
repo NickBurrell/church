@@ -98,6 +98,12 @@ if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
 
   ENDFOREACH( file test_list)
 
+add_dependencies(church_lang GoogleTest)
+add_dependencies(church GoogleTest)
+
+target_link_libraries(church gtest gtest_main pthread)
+target_link_libraries(church gtest gtest_main pthread)
+
 endif()
 
 if(BENCHMARK OR "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
@@ -121,5 +127,16 @@ if(BENCHMARK OR "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
     set_target_properties( ${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/benchmarks")
 
   ENDFOREACH(file in test_list)
+
+
+add_dependencies(church_lang GoogleTest)
+add_dependencies(church GoogleTest)
+add_dependencies(church_lang GoogleBench)
+add_dependencies(church GoogleBench)
+
+target_link_libraries(church benchmark gtest gtest_main pthread)
+target_link_libraries(church_lang gtest benchmark gtest_main pthread)
+
+
 
 endif()
