@@ -12,19 +12,16 @@ matrix:
   include:
     - os: linux
       compiler: gcc
-      env: BUILD_OPTIONS=COMPILE
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
 
     - os: linux
       compiler: gcc
-      env: BUILD_OPTIONS=TEST
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
 
 
     - os: linux
       compiler: gcc
-      env: BUILD_OPTIONS=BENCMARK
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=BENCMARK BUILD_TYPE=DEBUG
 
     # Release Builds
     - os: linux
@@ -33,16 +30,13 @@ matrix:
 
     # OSX Builds
     - os: osx
-      env: BUILD_OPTIONS=COMPILE
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
 
     - os: osx
-      env: BUILD_OPTIONS=TEST
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
 
     - os: osx
-      env: BUILD_OPTIONS=BENCHMARK
-      env: BUILD_TYPE=DEBUG
+      env: BUILD_OPTIONS=BENCHMARK BUILD_TYPE=DEBUG
 
   allow_failures:
     - os: osx
