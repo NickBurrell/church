@@ -75,6 +75,7 @@ link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
 link_directories(${CMAKE_BINARY_DIR}/build)
 
+add_subdirectory(parser)
 add_executable(church main.cpp)
 
 add_library(church_lang SHARED main.cpp)
