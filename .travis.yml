@@ -4,6 +4,9 @@ stages:
   - Build
   - Test
   
+env:
+  - BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+  
 os:
   - linux
   - osx
@@ -12,10 +15,7 @@ compiler:
   - gcc
   - clang
   
-env:
-  - BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-  - BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-  
+
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
@@ -46,6 +46,12 @@ install:
 jobs:
   include:
     - stage: Build
+    env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
     - os: linux
       compiler: gcc
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
