@@ -81,22 +81,14 @@ before_install:
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install g++-8 -y; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /user/bin/clang++-3.8 100; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /user/bin/clang++-6.0 1000; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /user/bin/clang++-3.8 100; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang /user/bin/clang-3.8 100; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang clang /user/bin/clang-3.8 100; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang clang /user/bin/clang-6.0 1000; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --config clang; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --config clang++; fi
-  
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6 90; fi
 
 script: 
   - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
   - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-  - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE; fi
-  - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST=TRUE -DBENCHMARK=TRUE; fi
+  - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+  - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE -DBENCHMARK=TRUE; fi
   - make
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
