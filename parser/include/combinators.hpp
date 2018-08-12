@@ -17,7 +17,7 @@ namespace church::parser {
     using ParserType = typename ParserReturn<Parser>::first_type;
 
     namespace detail {
-        template<typename Parser, typename T,, typename Function>
+        template<typename Parser, typename T, typename Function>
         constexpr Pair<T, ParserInput> accumulateParse(ParserInput input, Parser&& parser, T init, Function&& f) {
             while (!input.empty()) {
                 const auto result = parser(input);
@@ -150,7 +150,7 @@ namespace church::parser {
     constexpr auto exactlyN(Parser&& parser, std::size_t count, T&&  init, Function&& function) {
         return [parser = std::forward<Parser>(parser), count, init = std::forward<T>(init),
                 function = std::forward<Function>(function)] (ParserInput input) -> ParserResult<T> {
-            return ParserResult(detail::accumulateN(input, parser, count, init, function));
+            return ParserResult<T>(detail::accumulateN(input, parser, count, init, function));
         };
     }
 

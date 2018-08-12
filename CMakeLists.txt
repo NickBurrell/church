@@ -32,9 +32,10 @@ LINK_DIRECTORIES(
   ${CMAKE_BINARY_DIR}/lib64)
 ADD_LIBRARY(church SHARED
   main.cpp)
-
 TARGET_INCLUDE_DIRECTORIES(church SYSTEM PRIVATE
-  "${CMAKE_BINARY_DIR}/include")
+     "${CMAKE_BINARY_DIR}/include"
+     "${CMAKE_BINARY_DIR}/parser/include"
+     "${CMAKE_BINARY_DIR}/lib/include")
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
  EXTERNALPROJECT_ADD(google-test

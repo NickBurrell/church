@@ -1,5 +1,5 @@
--Iinclude/
--Iparser/include/
+-I./include/
+-I./parser/include/
 -Wall
 -Wextra
 -pedantic
