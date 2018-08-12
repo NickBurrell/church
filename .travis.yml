@@ -10,7 +10,7 @@ os:
 
 stages:
   - Build
-  - Tests
+  - Test
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
@@ -120,7 +120,7 @@ jobs:
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
 
-    - stage: Tests
+    - stage: Test
 
     - os: linux
       compiler: gcc
