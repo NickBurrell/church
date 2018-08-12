@@ -73,18 +73,27 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 90; fi
 
-script: 
-  - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-  - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-  - make
-  - |
-    if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
-        find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
-        find bin/tests/ -type f -exec {} \;
-        find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
-        ./run_gcov.sh;
-        fi
+jobs:
+  include:
+    - stage: "Build"
+      name: "Compilation"
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+    - stage: "Test"
+      name: "Unit Tests"
+      script:
+        - |
+          if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
+          find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
+          find bin/tests/ -type f -exec {} \;
+          find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
+          ./run_gcov.sh;
+          fi
+
 after_success:
   - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
   
