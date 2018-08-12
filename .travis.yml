@@ -85,7 +85,7 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6 90; fi
 
 script: 
-  - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+  - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
   - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
   - if [ "$BUILD_OPTIONS" = "BENCHMARK" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE -DBENCHMARK=TRUE; fi
