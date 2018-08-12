@@ -108,6 +108,12 @@ jobs:
     - os: osx
       env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
 
+    - allow_failures:
+        - os: osx
+        - compiler: clang
+        - env: BUILD_OPTIONS=BENCHMARK
+
+
       name: "Compilation"
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
@@ -115,10 +121,27 @@ jobs:
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
 
-    - stage: "Test"
-      name: "Unit Tests"
-      script:
-        - |
+    - stage: "Unit Tests"
+
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
+    - os: linux
+      compiler: clang
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
+    - os: osx
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
+    - allow_failures:
+        - os: osx
+        - compiler: clang
+        - env: BUILD_OPTIONS=BENCHMARK
+
+
+    - script:
+      - |
           if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
           find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
           find bin/tests/ -type f -exec {} \;
