@@ -80,9 +80,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install codecov; fi
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install g++-8 -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install g++-8 clang-6.0 -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6 90; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 90; fi
 
 script: 
   - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
