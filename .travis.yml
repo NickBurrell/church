@@ -4,8 +4,18 @@ stages:
   - Build
   - Test
   
+os:
+  - linux
+  - osx
+  
+compiler:
+  - gcc
+  - clang
+  
 env:
+  - BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
   - BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+  
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
