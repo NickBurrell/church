@@ -41,7 +41,7 @@ install:
 jobs:
   include:
     - stage: Build
-    - script:
+    script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
         - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
