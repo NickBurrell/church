@@ -43,6 +43,14 @@ jobs:
     - stage: Build
     - os: linux
       compiler: gcc
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+    - os: linux
+      compiler: gcc
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
