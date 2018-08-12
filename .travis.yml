@@ -76,6 +76,38 @@ install:
 jobs:
   include:
     - stage: "Build"
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
+    - os: linux
+      compiler: clang
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+
+    - os: linux
+      compiler: clang
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
+    # Release Builds
+    - os: linux
+      compiler: gcc
+      env: BUILD_TYPE=RELEASE
+    
+    - os: linux
+      compiler: clang
+      env: BUILD_TYPE=RELEASE
+
+    # OSX Builds
+    - os: osx
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+
+    - os: osx
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+
       name: "Compilation"
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
