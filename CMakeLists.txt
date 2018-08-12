@@ -1,144 +1,109 @@
-cmake_minimum_required (VERSION 2.6)
-project (Church)
+cmake_minimum_required(VERSION 3.0.2)
+project(church)
 
-include(ExternalProject)
+INCLUDE(ExternalProject)
 
 option(BUILD_DOC "Build documentation" OFF)
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/docs)
+FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
+FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/benchmarks)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR/bin})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR/bin})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR/bin})
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17")
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/build)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
+SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17")
-
-if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g --coverage")
 elseif(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Werror -Wno-ignored-qualifiers")
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+  MESSAGE(WARNING "No build type specified; defaulting to debug.")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g --coverage")
+endif()
+SET(CMAKE_C_COMPILER gcc)
+SET(CMAKE_CXX_COMPILER g++)
+
+LINK_DIRECTORIES(
+  ${CMAKE_BINARY_DIR}/lib
+  ${CMAKE_BINARY_DIR}/lib64)
+ADD_LIBRARY(church SHARED
+  main.cpp)
+
+TARGET_INCLUDE_DIRECTORIES(church SYSTEM PRIVATE
+  "${CMAKE_BINARY_DIR}/include")
+
+if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+ EXTERNALPROJECT_ADD(google-test
+   PREFIX lib/google-test
+   GIT_REPOSITORY https://github.com/google/googletest
+   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
+ MESSAGE("Disovering test files:")
+
+ FILE(GLOB test_list tests/*.cpp)
+ FOREACH(file ${test_list})
+   STRING(REPLACE ".cpp" "" test_name_unclean ${file})
+   GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
+
+   MESSAGE("Test file discovered: ${test_name}. Generating build target ${test_name}")
+
+   ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
+
+   ADD_DEPENDENCIES(${test_name} church google-test)
+
+   TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread church)
+   TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
+
+   TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
+     "${CMAKE_BINARY_DIR}/include"
+     "${CMAKE_BINARY_DIR}/parser/include"
+     "${CMAKE_BINARY_DIR}/lib/include")
+
+   SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
+ ENDFOREACH(file test_list)
 endif()
 
-if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -lgcov ")
-endif()
-
-if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]")
-  ExternalProject_Add(GoogleTest
-    DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-    GIT_REPOSITORY https://www.github.com/google/googletest
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-    )
-endif(TEST)
-
-if(BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
-  ExternalProject_Add(GoogleBench
+if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+  EXTERNALPROJECT_ADD(google-bench
+    PREFIX lib/google-bench
     GIT_REPOSITORY https://github.com/google/benchmark
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-    )
-endif(BENCHMARK)
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
+  MESSAGE("Discovering benchmark files")
 
-find_package(Doxygen)
-if(DOXYGEN_FOUND AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
+  FILE(GLOB benchmark_list benchmarks/*.cpp)
+  FOREACH(file ${benchmark_list})
+    STRING(REPLACE ".cpp" "" benchmark_name_unclean ${file})
+    GET_FILENAME_COMPONENT(benchmark_name ${benchmark_name_unclean} NAME)
 
-  #set(DOXYGEN_IN ${CMAKE_BINARY_DIR}/docs/Doxyfile.in)
-  #set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/docs/Doxyfile)
+    MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
-  #configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT})
+    ADD_EXECUTABLE(${benchmark_name} ${file})
 
-  set(DOXYFILE ${CMAKE_BINARY_DIR}/docs/Doxyfile)
+    ADD_DEPENDENCIES(${benchmark_name} church google-test google-bench)
 
-  add_custom_target( doxygen ALL
+    TARGET_LINK_LIBRARIES(${benchmark_name} gtest gtest_main pthread church benchmark benchmark_main)
+    TARGET_COMPILE_OPTIONS(${benchmark_name} PUBLIC -pthread)
+
+    TARGET_INCLUDE_DIRECTORIES(${benchmark_name} SYSTEM PRIVATE
+      "${CMAKE_BINARY_DIR}/lib/include")
+
+    SET_TARGET_PROPERTIES(${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/benchmarks")
+  ENDFOREACH(file in test_list)
+endif()
+
+if(DOXYGEN_FOUND AND CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" OR BUILD_DOC MATCHES "^[Oo][Nn]" OR BUILD_DOC MATCHES "^[Tt][Rr][Uu][Ee]")
+  FIND_PACKAGE(Doxygen)
+
+  SET(DOXYFILE ${CMAKE_BINARY_DIR}/docs/Doxyfile)
+
+  ADD_CUSTOM_TARGET(doxygen ALL
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Generating API documentation"
-    VERBATIM )
-
+    VERBATIM)
 else()
   MESSAGE("Doxygen not found; skipping")
-endif()
-
-include_directories(${CMAKE_BINARY_DIR}/src/include)
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
-link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
-link_directories(${CMAKE_BINARY_DIR}/build)
-
-add_subdirectory(parser)
-add_executable(church main.cpp)
-
-add_library(church_lang SHARED main.cpp)
-
-if(TEST MATCHES "^[Tt][Rr][Uu][Ee]" OR TEST MATCHES "^[Oo][Nn]" )
-
-  MESSAGE("Begun building tests")
-
-  file(GLOB test_list tests/*.cpp)
-  FOREACH(file ${test_list})
-    string(REPLACE ".cpp" "" test_name_unclean ${file})
-    get_filename_component( test_name ${test_name_unclean} NAME)
-
-    MESSAGE("Begun building test: ${test_name}")
-
-    add_executable( ${test_name} ${file})
-
-    add_dependencies(${test_name} GoogleTest)
-    target_link_libraries(${test_name} gtest gtest_main pthread)
-
-    set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
-
-  ENDFOREACH( file test_list)
-
-add_dependencies(church_lang GoogleTest)
-add_dependencies(church GoogleTest)
-
-target_link_libraries(church gtest gtest_main pthread)
-target_link_libraries(church gtest gtest_main pthread)
-
-endif()
-
-if(BENCHMARK OR "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]")
-
-  MESSAGE("Begun building benchmarks")
-
-  file(GLOB benchmark_list benchmarks/*.cpp)
-  FOREACH(file ${benchmark_list})
-    string(REPLACE ".cpp" "" benchmark_name_unclean ${file})
-    get_filename_component( test_name ${benchmark_name_unclean} NAME)
-
-    MESSAGE("Begun building benchmark: ${benchmark_name}")
-
-    add_executable( ${benchmark_name} ${file})
-
-    add_dependencies(${benchmark_name} GoogleTest)
-    add_dependencies(${benchmark_name} GoogleBench)
-
-    target_link_libraries(${benchmark_name} gtest gtest_main benchmark pthread)
-
-    set_target_properties( ${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/benchmarks")
-
-  ENDFOREACH(file in test_list)
-
-
-add_dependencies(church_lang GoogleTest)
-add_dependencies(church GoogleTest)
-add_dependencies(church_lang GoogleBench)
-add_dependencies(church GoogleBench)
-
-target_link_libraries(church benchmark gtest gtest_main pthread)
-target_link_libraries(church_lang gtest benchmark gtest_main pthread)
-
-
-
 endif()

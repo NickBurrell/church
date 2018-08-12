@@ -60,12 +60,9 @@ script:
   - make
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
-        find . -name "*.gcno" -exec mv -t . {} +;
-        for i in $(find tests/ -name "*.cpp" ! -name "*CMake*" -exec basename {} \; | cut -f 1 -d '.'); do
-            ./bin/$i;
-        done; 
-        ./bin/Test;
-        find . -name "*.gcda" -exec mv -t . {} +;
+        find . -name "*.gcno" -path "./CMakeFiles/" -exec mv -t . {} +;
+        find bin/tests/ -type f -exec {} \;
+        find . -name "*.gcda" -path "./CMakeFiles/ -exec mv -t . {} +;
         ./run_gcov.sh;
         fi
 after_success:
