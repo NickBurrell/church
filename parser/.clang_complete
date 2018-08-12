@@ -1,0 +1,6 @@
+-I../include/
+-Iinclude/
+-Wall
+-Wextra
+-pedantic
+-std=c++17
