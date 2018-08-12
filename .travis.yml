@@ -14,7 +14,6 @@ compiler:
   
 matrix:
   include:
-    - env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
     - compiler: gcc
     - compiler: clang
     - os: linux
@@ -56,22 +55,31 @@ jobs:
     - stage: Build
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
       script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DTESTING=TRUE -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . ; fi
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
     - os: linux
       compiler: clang
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
       script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DTESTING=TRUE -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . ; fi
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
 
     # OSX Builds
     - os: osx
+      compiler: g++
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DTESTING=TRUE -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . ; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make
+    - os: osx
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+      compiler: clang
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
         - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
@@ -83,8 +91,8 @@ jobs:
     - compiler: clang
     
 script:
-  - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+  - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DTESTING=TRUE -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+  - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . ; fi
   - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
   - make 
   - |
