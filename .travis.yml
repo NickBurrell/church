@@ -33,12 +33,6 @@ install:
 jobs:
   include:
     - stage: Build
-    - script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
     - os: linux
       compiler: gcc
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
@@ -48,17 +42,6 @@ jobs:
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
 
-
-    - os: linux
-      compiler: gcc
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-      script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
-
     - os: linux
       compiler: clang
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
@@ -67,51 +50,10 @@ jobs:
         - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
-
-
-    - os: linux
-      compiler: clang
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-      script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
-
-    # Release Builds
-    - os: linux
-      compiler: gcc
-      env: BUILD_TYPE=RELEASE
-      script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
-   
-    - os: linux
-      compiler: clang
-      env: BUILD_TYPE=RELEASE
-      script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
 
     # OSX Builds
     - os: osx
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-      script:
-        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
-        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
-        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
-        - make 
-
-
-    - os: osx
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
         - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
@@ -167,12 +109,10 @@ jobs:
             ./run_gcov.sh;
         fi
 
-
   allow_failures:
     - os: osx
     - compiler: clang
-    - env: BUILD_OPTIONS=BENCHMARK
-
+    
 after_success:
   - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$COVERAGE" = "TRUE" ]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
   
