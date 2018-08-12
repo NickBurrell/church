@@ -75,7 +75,7 @@ install:
   #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --config clang; fi
   #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --config clang++; fi
   
-  #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++ 90; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90; fi
 
 script: 
   - if [ -z "$BUILD_OPTION" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
