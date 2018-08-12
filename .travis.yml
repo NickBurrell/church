@@ -3,6 +3,9 @@ language: cpp
 stages:
   - Build
   - Test
+  
+env:
+  - BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
