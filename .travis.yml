@@ -8,44 +8,9 @@ os:
   - linux
   - osx
 
-matrix:
-  include:
-    - os: linux
-      compiler: gcc
-      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: gcc
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: clang
-      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: clang
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-    # Release Builds
-    - os: linux
-      compiler: gcc
-      env: BUILD_TYPE=RELEASE
-    
-    - os: linux
-      compiler: clang
-      env: BUILD_TYPE=RELEASE
-
-    # OSX Builds
-    - os: osx
-      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: osx
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-  allow_failures:
-    - os: osx
-    - compiler: clang
-    - env: BUILD_OPTIONS=BENCHMARK
+stages:
+  - Build
+  - Tests
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
@@ -75,80 +40,141 @@ install:
 
 jobs:
   include:
-    - stage: "Build"
+    - stage: Build
     - os: linux
       compiler: gcc
       env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: gcc
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: clang
-      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: linux
-      compiler: clang
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-    # Release Builds
-    - os: linux
-      compiler: gcc
-      env: BUILD_TYPE=RELEASE
-    
-    - os: linux
-      compiler: clang
-      env: BUILD_TYPE=RELEASE
-
-    # OSX Builds
-    - os: osx
-      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
-
-    - os: osx
-      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
-
-    - allow_failures:
-        - os: osx
-        - compiler: clang
-        - env: BUILD_OPTIONS=BENCHMARK
-
-
-      name: "Compilation"
       script:
         - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
         - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
         - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
         - make 
 
-    - stage: "Unit Tests"
 
     - os: linux
       compiler: gcc
       env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+
+    - os: linux
+      compiler: clang
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
 
     - os: linux
       compiler: clang
       env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+
+    # Release Builds
+    - os: linux
+      compiler: gcc
+      env: BUILD_TYPE=RELEASE
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+   
+    - os: linux
+      compiler: clang
+      env: BUILD_TYPE=RELEASE
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
+
+    # OSX Builds
+    - os: osx
+      env: BUILD_OPTIONS=COMPILE BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
+
 
     - os: osx
       env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+      script:
+        - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+        - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+        - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+        - make 
 
-    - allow_failures:
-        - os: osx
-        - compiler: clang
-        - env: BUILD_OPTIONS=BENCHMARK
+    - stage: Tests
 
-
+    - os: linux
+      compiler: gcc
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG COVERAGE=TRUE
     - script:
+      - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+      - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+      - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+      - make 
       - |
-          if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
-          find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
-          find bin/tests/ -type f -exec {} \;
-          find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
-          ./run_gcov.sh;
-          fi
+        if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
+            find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
+            find bin/tests/ -type f -exec {} \;
+            find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
+            ./run_gcov.sh;
+        fi
+
+    - os: linux
+      compiler: clang
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+    - script:
+      - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+      - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+      - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+      - make 
+      - |
+        if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
+            find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
+            find bin/tests/ -type f -exec {} \;
+            find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
+            ./run_gcov.sh;
+        fi
+
+    - os: osx
+      env: BUILD_OPTIONS=TEST BUILD_TYPE=DEBUG
+    - script:
+      - if [ -z "$BUILD_OPTIONS" ]; then cmake . -DCMAKE_BUILD_TYPE="$BUILD_TYPE"; fi
+      - if [ "$BUILD_OPTIONS" = "COMPILE" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug; fi
+      - if [ "$BUILD_OPTIONS" = "TEST" ]; then cmake . -DCMAKE_BUILD_TYPE=Debug -DTESTING=TRUE; fi
+      - make 
+      - |
+        if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$BUILD_OPTIONS" = "TEST" ]; then
+            find ./CMakeFiles -name "*.gcno" -exec mv -t . {} \;
+            find bin/tests/ -type f -exec {} \;
+            find ./CMakeFiles -name "*.gcda"  -exec mv -t . {} \;
+            ./run_gcov.sh;
+        fi
+
+
+  allow_failures:
+    - os: osx
+    - compiler: clang
+    - env: BUILD_OPTIONS=BENCHMARK
 
 after_success:
-  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$COVERAGE" = "TRUE" ]; then bash <(curl -s https://codecov.io/bash) -t 42a329d2-3928-468b-80d4-6af2e4254968; fi
   
